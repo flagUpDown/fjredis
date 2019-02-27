@@ -45,7 +45,7 @@ class FjRedis
         if (!$this->is_connected()) {
             $this->connect();
         }
-        stream_set_timeout($this->redis, $timeout);
+        \stream_set_timeout($this->redis, $timeout);
     }
 
     public function connect()
