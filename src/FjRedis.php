@@ -83,7 +83,7 @@ class FjRedis
 
     public function is_connected()
     {
-        return $this->redis !== null;
+        return $this->redis !== null && !feof($this->redis);
     }
 
     public function close()
