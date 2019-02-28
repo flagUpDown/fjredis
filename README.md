@@ -21,9 +21,7 @@ require 'vendor/autoload.php';
 ```php
 <?php
 namespace test;
-
 use FlagUpDown\FjRedis;
-
 require "vendor/autoload.php";
 
 $redis = new FjRedis();
@@ -52,3 +50,40 @@ array(3) {
 string(2) "OK"
 ```
 
+### 批量操作（pipeline）
+
+将一个或多个命令先预存到本地，最后一次性发送，从而达到减少IO调用的次数的目的。
+
+本库默认缓存区的大小是无限的。
+
+```php
+$redis = new FjRedis();
+
+//开启pipline
+$redis->pipeline_start();
+for ($i = 0;$i < 10000;$i++) {
+    $redis->rpush('mylist', array('1value' . $i, '2value' . $i, '3value' . $i));
+}
+//发送命令，得到命令返回值，关闭pipline
+var_dump($redis->pipeline_end());
+var_dump($redis->llen('mylist'));
+
+//开启pipline
+$redis->pipeline_start();
+$redis->set("key1","value1");
+//丢弃缓冲区中的命令，关闭pipeline
+$redis->pipeline_discard();
+
+//开启pipline
+$redis->pipeline_start();
+$redis->set("key1","value2");
+//清空pipline中缓存的命令
+$redis->pipeline_rollback();
+$redis->set("key1","value3");
+//发送命令，得到命令返回值，关闭pipline
+var_dump($redis->pipeline_end());
+
+var_dump($redis->get("key1"));
+
+$redis->flushall();
+```
