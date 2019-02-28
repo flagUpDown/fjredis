@@ -1,6 +1,7 @@
 <?php
 namespace FlagUpDown;
 
+use FlagUpDown\Exceptions\CommandException;
 use FlagUpDown\Exceptions\StreamException;
 use FlagUpDown\Utils\CommandEncode;
 use FlagUpDown\Utils\RespDecode;
@@ -16,6 +17,9 @@ class FjRedis
     protected $connectFailures;
     protected $maxConnectRetries;
 
+    protected $pipeline;
+    protected $pipelinePool;
+
     public function __construct(string $host = '127.0.0.1', int $port = 6379, int $db = 0, string $authPassword = null, float $connectTimeout = 3.0)
     {
         $this->host           = $host;
@@ -25,6 +29,8 @@ class FjRedis
         $this->selectedDb     = $db;
 
         $this->maxConnectRetries = 0;
+
+        $this->pipeline = false;
     }
 
     public function __destruct()
@@ -110,6 +116,52 @@ class FjRedis
         return $response;
     }
 
+    public function pipeline_start()
+    {
+        if ($this->pipeline) {
+            throw new CommandException('just support one pipline.There is already one pipline');
+        }
+        $this->pipeline     = true;
+        $this->pipelinePool = [];
+    }
+
+    public function pipeline_end()
+    {
+        if (!$this->pipeline) {
+            throw new CommandException('not start pipline');
+        }
+        $commands = '';
+        $len      = count($this->pipelinePool);
+        foreach ($this->pipelinePool as $command) {
+            $commands .= $command;
+        }
+        $this->_write_to_redis($commands);
+        $reply = [];
+        for ($i = 0;$i < $len;$i++) {
+            $reply[] = RespDecode::decode($this->redis);
+        }
+        $this->pipeline     = false;
+        $this->pipelinePool = [];
+        return $reply;
+    }
+
+    public function pipeline_rollback()
+    {
+        if (!$this->pipeline) {
+            throw new CommandException('not start pipline');
+        }
+        $this->pipelinePool = [];
+    }
+
+    public function pipeline_discard()
+    {
+        if (!$this->pipeline) {
+            throw new CommandException('not start pipline');
+        }
+        $this->pipeline     = false;
+        $this->pipelinePool = [];
+    }
+
     public function __call($name, $args)
     {
         $name = strtolower($name);
@@ -117,8 +169,13 @@ class FjRedis
         $args = self::_flatten_array($args);
         array_unshift($args, $name);
         $command = CommandEncode::array_encode($args);
-        $this->_write_to_redis($command);
-        $reply = RespDecode::decode($this->redis);
+        if ($this->pipeline) {
+            $this->pipelinePool[] = $command;
+            $reply                = true;
+        } else {
+            $this->_write_to_redis($command);
+            $reply = RespDecode::decode($this->redis);
+        }
         return $reply;
     }
 
