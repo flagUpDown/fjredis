@@ -11,7 +11,7 @@ class FjRedis
     protected $redis;
     protected $host;
     protected $port;
-    protected $db;
+    protected $selectedDb;
     protected $authPassword;
     protected $connectTimeout;
     protected $connectFailures;
@@ -114,6 +114,11 @@ class FjRedis
         $response         = $this->__call('select', array($index));
         $this->selectedDb = $index;
         return $response;
+    }
+
+    public function getDB()
+    {
+        return $this->selectedDb;
     }
 
     public function pipeline_start()
