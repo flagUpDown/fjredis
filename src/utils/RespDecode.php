@@ -10,11 +10,11 @@ if (!defined('CRLF')) {
 
 class RespDecode
 {
-    public static $SIMPLE_STRING = '+';
-    public static $INTEGER       = ':';
-    public static $BULK_STRING   = '$';
-    public static $ARRAY         = '*';
-    public static $ERROR         = '-';
+    protected static $SIMPLE_STRING = '+';
+    protected static $INTEGER       = ':';
+    protected static $BULK_STRING   = '$';
+    protected static $ARRAY         = '*';
+    protected static $ERROR         = '-';
 
     public static function decode($streamHandle)
     {
