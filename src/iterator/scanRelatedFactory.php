@@ -5,9 +5,16 @@ use FlagUpDown\FjRedis;
 
 class ScanRelatedFactory
 {
-    public static function getClass(FjRedis $client, string $commandName, ...$args)
+    protected $client;
+
+    public function __construct(FjRedis $client)
     {
-        $className = __NAMESPACE__ . '\\' . $commandName . 'Iterator';
-        return new $className($client, ...$args);
+        $this->client = $client;
+    }
+
+    public function __call($name, $args)
+    {
+        $className = __NAMESPACE__ . '\\' . $name . 'Iterator';
+        return new $className($this->client, ...$args);
     }
 }

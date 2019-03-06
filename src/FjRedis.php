@@ -3,7 +3,9 @@ namespace FlagUpDown;
 
 use FlagUpDown\Exceptions\CommandException;
 use FlagUpDown\Exceptions\StreamException;
+use FlagUpDown\Iterator\ScanRelatedFactory;
 use FlagUpDown\Utils\CommandEncode;
+
 use FlagUpDown\Utils\RespDecode;
 
 class FjRedis
@@ -20,6 +22,8 @@ class FjRedis
     protected $pipeline;
     protected $pipelinePool;
 
+    protected $scanRelatedFactory;
+
     public function __construct(string $host = '127.0.0.1', int $port = 6379, int $db = 0, string $authPassword = null, float $connectTimeout = 3.0)
     {
         $this->host           = $host;
@@ -31,6 +35,8 @@ class FjRedis
         $this->maxConnectRetries = 0;
 
         $this->pipeline = false;
+
+        $this->scanRelatedFactory = null;
     }
 
     public function __destruct()
@@ -165,6 +171,14 @@ class FjRedis
         }
         $this->pipeline     = false;
         $this->pipelinePool = [];
+    }
+
+    public function iterator()
+    {
+        if (!$this->scanRelatedFactory) {
+            $this->scanRelatedFactory = new ScanRelatedFactory($this);
+        }
+        return $this->scanRelatedFactory;
     }
 
     public function __call($name, $args)
