@@ -14,4 +14,10 @@ class ScanIterator extends CursorBasedIterator
     {
         return $this->client->scan($this->_getScanOptions());
     }
+
+    protected function _next()
+    {
+        $this->position++;
+        $this->currValue = array_shift($this->elements);
+    }
 }

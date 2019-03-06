@@ -46,8 +46,7 @@ abstract class CursorBasedIterator implements \Iterator
         if (empty($this->elements)) {
             $this->valid = false;
         } else {
-            $this->position++;
-            $this->currValue = array_shift($this->elements);
+            $this->_next();
         }
     }
 
@@ -88,4 +87,5 @@ abstract class CursorBasedIterator implements \Iterator
     }
 
     abstract protected function _fetch();
+    abstract protected function _next();
 }
