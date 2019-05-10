@@ -13,6 +13,10 @@ nbproject
 Thumbs.db
 
 # composer vendor dir
+vendor
+
+# composer lock file
+composer.lock
 
 # composer itself is not needed
 composer.phar
@@ -37,9 +41,6 @@ tags
 
 # php_cs file
 .php_cs.cache
-php-cs-fixer
 
 # test folder
 tests
-
-vendor
