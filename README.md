@@ -25,29 +25,13 @@ use FlagUpDown\FjRedis;
 require "vendor/autoload.php";
 
 $redis = new FjRedis();
-// $redis->stream_set_timeout(2);
-var_dump($redis->set('key','value'));
-var_dump($redis->get('key'));
-var_dump($redis->rpush('list', array('value1', 'value2', 'value3')));
-var_dump($redis->lrange('list', 0, -1));
-var_dump($redis->flushall());
-```
-
-运行结果：
-
-```
-bool(true)
-string(5) "value"
-int(3)
-array(3) {
-  [0]=>
-  string(6) "value1"
-  [1]=>
-  string(6) "value2"
-  [2]=>
-  string(6) "value3"
-}
-bool(true)
+// $redis->stream_set_timeout(2); // 设置连接超时的时间
+$redis->get('key'); // bool(false)
+$redis->set('key','value'); // bool(true)
+$redis->get('key'); // string(5) "value"
+$redis->rpush('list', array('value1', 'value2', 'value3')); // int(3)
+var_dump($redis->lrange('list', 0, -1)); // ['value1', 'value2', 'value3']
+var_dump($redis->flushall()); // bool(true)
 ```
 
 ### 批量操作（pipeline）
