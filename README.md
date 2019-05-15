@@ -30,8 +30,8 @@ $redis->get('key'); // bool(false)
 $redis->set('key','value'); // bool(true)
 $redis->get('key'); // string(5) "value"
 $redis->rpush('list', array('value1', 'value2', 'value3')); // int(3)
-var_dump($redis->lrange('list', 0, -1)); // ['value1', 'value2', 'value3']
-var_dump($redis->flushall()); // bool(true)
+$redis->lrange('list', 0, -1); // ['value1', 'value2', 'value3']
+$redis->flushall(); // bool(true)
 ```
 
 ### 批量操作（pipeline）
