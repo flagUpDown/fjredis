@@ -36,7 +36,7 @@ var_dump($redis->flushall());
 运行结果：
 
 ```
-string(2) "OK"
+bool(true)
 string(5) "value"
 int(3)
 array(3) {
@@ -47,7 +47,7 @@ array(3) {
   [2]=>
   string(6) "value3"
 }
-string(2) "OK"
+bool(true)
 ```
 
 ### 批量操作（pipeline）

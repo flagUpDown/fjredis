@@ -195,6 +195,9 @@ class FjRedis
             $this->_write_to_redis($command);
             $reply = RespDecode::decode($this->redis);
         }
+        if (strtoupper($reply) === 'OK') {
+            $reply = true;
+        }
         return $reply;
     }
 
