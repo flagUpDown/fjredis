@@ -222,13 +222,13 @@ class FjRedis
     protected static function _flatten_array(array $src, &$out = [])
     {
         foreach ($src as $key => $value) {
-            if (!is_int($key)) {
+            if (!is_int($key) && $value !== false) {
                 $out[] = $key;
             }
 
             if (is_array($value)) {
                 self::_flatten_array($value, $out);
-            } else {
+            } elseif ($value !== true) {
                 $out[] = $value;
             }
         }
