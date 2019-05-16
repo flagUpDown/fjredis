@@ -41,9 +41,7 @@ class FjRedis
 
     public function __destruct()
     {
-        if ($this->is_connected()) {
-            $this->close();
-        }
+        $this->close();
     }
 
     public function set_max_connect_retries(int $retries)
