@@ -219,12 +219,19 @@ class FjRedis
         }
     }
 
-    protected static function _flatten_array(array $array)
+    protected static function _flatten_array(array $src, &$out = [])
     {
-        $return = array();
-        array_walk_recursive($array, function ($value) use (&$return) {
-            $return[] = $value;
-        });
-        return $return;
+        foreach ($src as $key => $value) {
+            if (!is_int($key)) {
+                $out[] = $key;
+            }
+
+            if (is_array($value)) {
+                self::_flatten_array($value, $out);
+            } else {
+                $out[] = $value;
+            }
+        }
+        return $out;
     }
 }
