@@ -228,7 +228,7 @@ class FjRedis
 
             if (is_array($value)) {
                 self::_flatten_array($value, $out);
-            } else {
+            } elseif ($value !== true) {
                 $out[] = $value;
             }
         }
