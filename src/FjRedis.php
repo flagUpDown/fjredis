@@ -196,7 +196,7 @@ class FjRedis
 
         if ($reply === null) {
             $reply = false;
-        } elseif (strtoupper($reply) === 'OK') {
+        } elseif (is_string($reply) && strtoupper($reply) === 'OK') {
             $reply = true;
         }
         return $reply;
