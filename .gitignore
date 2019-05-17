@@ -27,9 +27,7 @@ composer.phar
 # phpunit itself is not needed
 phpunit.phar
 
-# local phpunit config
-/phpunit.xml
-/config/scm_config.php
+# local log
 log/*
 
 # Vim swap Files
