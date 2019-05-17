@@ -41,6 +41,3 @@ tags
 
 # php_cs file
 .php_cs.cache
-
-# test folder
-tests
