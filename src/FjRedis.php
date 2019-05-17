@@ -108,14 +108,14 @@ class FjRedis
 
     public function auth(string $password)
     {
-        $response           = $this->__call('auth', array($password));
+        $response           = $this->__call('auth', [$password]);
         $this->authPassword = $password;
         return $response;
     }
 
     public function select(int $index)
     {
-        $response         = $this->__call('select', array($index));
+        $response         = $this->__call('select', [$index]);
         $this->selectedDb = $index;
         return $response;
     }

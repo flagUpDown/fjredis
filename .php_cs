@@ -11,7 +11,7 @@ $rules = [
     '@PSR2'                                        => true,
 
     /** 数组统一:[ ] **/
-    //'array_syntax'                                 => ['syntax' => 'short'],
+    'array_syntax'                                 => ['syntax' => 'short'],
 
     /** namespace 之后空一行 **/
     'blank_line_after_namespace'                   => true,

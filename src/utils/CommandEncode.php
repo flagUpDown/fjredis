@@ -9,7 +9,7 @@ class CommandEncode
 {
     public static function array_encode($arr)
     {
-        return sprintf('*%d%s%s', count($arr), CRLF, implode('', array_map(array('self', '_string_encode'), $arr)));
+        return sprintf('*%d%s%s', count($arr), CRLF, implode('', array_map(['self', '_string_encode'], $arr)));
     }
 
     protected static function _string_encode($str)
