@@ -221,8 +221,9 @@ class FjRedis
     {
         $name = strtoupper($name);
         if ($name === 'ZUNIONSTORE') {
+            $dest = array_shift($args);
             $keys = (array) array_shift($args);
-            $args = [count($keys), $keys, $args];
+            $args = [$dest, count($keys), $keys, $args];
         }
         // 把参数数组扁平化，变为只有一层
         $args = self::_flatten_array($args);
