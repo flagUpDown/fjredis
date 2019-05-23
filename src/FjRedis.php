@@ -181,11 +181,8 @@ class FjRedis
 
     public function __call($name, $args)
     {
-        $name = strtolower($name);
-        // 把参数数组扁平化，变为只有一层
-        $args = self::_flatten_array($args);
-        array_unshift($args, $name);
-        $command = CommandEncode::array_encode($args);
+        $command = $this->_pre_redis_call($name, $args);
+
         if ($this->pipeline) {
             $this->pipelinePool[] = $command;
             $reply                = true;
@@ -199,7 +196,8 @@ class FjRedis
         } elseif (is_string($reply) && strtoupper($reply) === 'OK') {
             $reply = true;
         }
-        return $reply;
+
+        return $this->_post_redis_call($name, $reply);
     }
 
     protected function _write_to_redis(string $command)
@@ -217,6 +215,30 @@ class FjRedis
             }
             $lastFailed = ($fwrite == 0);
         }
+    }
+
+    protected function _pre_redis_call($name, $args)
+    {
+        $name = strtoupper($name);
+        if ($name === 'ZUNIONSTORE') {
+            $keys = (array) array_shift($args);
+            $args = [count($keys), $keys, $args];
+        }
+        // 把参数数组扁平化，变为只有一层
+        $args = self::_flatten_array($args);
+        array_unshift($args, $name);
+        $command = CommandEncode::array_encode($args);
+        return $command;
+    }
+
+    protected function _post_redis_call($name, $reply)
+    {
+        if ($reply === null) {
+            $reply = false;
+        } elseif (is_string($reply) && strtoupper($reply) === 'OK') {
+            $reply = true;
+        }
+        return $reply;
     }
 
     protected static function _flatten_array(array $src, &$out = [])
