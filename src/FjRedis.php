@@ -108,14 +108,14 @@ class FjRedis
 
     public function auth(string $password)
     {
-        $response           = $this->__call('auth', array($password));
+        $response           = $this->__call('auth', [$password]);
         $this->authPassword = $password;
         return $response;
     }
 
     public function select(int $index)
     {
-        $response         = $this->__call('select', array($index));
+        $response         = $this->__call('select', [$index]);
         $this->selectedDb = $index;
         return $response;
     }
@@ -221,8 +221,9 @@ class FjRedis
     {
         $name = strtoupper($name);
         if ($name === 'ZUNIONSTORE') {
+            $dest = array_shift($args);
             $keys = (array) array_shift($args);
-            $args = [count($keys), $keys, $args];
+            $args = [$dest, count($keys), $keys, $args];
         }
         // 把参数数组扁平化，变为只有一层
         $args = self::_flatten_array($args);
