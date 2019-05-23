@@ -107,12 +107,8 @@ class FjRedisTest extends TestCase
         $range = $this->fjRedis->zRange('myset', 0, 4, ['withscores']);
         $this->assertEquals(['Hello', 1, 'World', 2.123, 'And', 10, 'Goodbye', 11], $range);
 
-
         $range = $this->fjRedis->zRange('myset', 0, 4, ['withscores' => false]);
         $this->assertEquals(['Hello', 'World', 'And', 'Goodbye'], $range);
-
-        $range = $this->fjRedis->zRevRange('myset', 0, 1, ['withscores' => true]);
-        $this->assertEquals(['Goodbye', 11, 'And', 10], $range);
 
         $range = $this->fjRedis->zRangeByScore('myset', '-inf', '+inf');
         $this->assertEquals(['Hello', 'World', 'And', 'Goodbye'], $range);
@@ -122,5 +118,26 @@ class FjRedisTest extends TestCase
 
         $range = $this->fjRedis->zRangeByScore('myset', '-inf', '+inf', ['withscores' => true, 'limit' => [1, 2]]);
         $this->assertEquals(['World', 2.123, 'And', 10], $range);
+
+        $range = $this->fjRedis->zRevRange('myset', 0, 1, ['withscores' => true]);
+        $this->assertEquals(['Goodbye', 11, 'And', 10], $range);
+
+        // testing zunionstore (intersection of sorted sets)
+        $this->fjRedis->zAdd('myset1', 1, 'key1');
+        $this->fjRedis->zAdd('myset1', 10, 'key2');
+        $this->fjRedis->zAdd('myset1', 100, 'key_not_in_myset2');
+
+        $this->fjRedis->zAdd('myset2', 1, 'key1');
+        $this->fjRedis->zAdd('myset2', 10, 'key2');
+        $this->fjRedis->zAdd('myset2', 200, 'key_not_in_myset1');
+
+        $this->fjRedis->zUnionStore('myset3', ['myset1', 'myset2']);
+        $range = $this->fjRedis->zRangeByScore('myset3', '-inf', '+inf', ['withscores' => true]);
+        $this->assertEquals(['key1', 2, 'key2', 20, 'key_not_in_myset2', 100, 'key_not_in_myset1', 200], $range);
+
+        // testing zunionstore WEIGHTS option
+        $this->fjRedis->zUnionStore('myset4', array('myset1', 'myset2'), array('weights' => array(2, 4)));
+        $range = $this->fjRedis->zRangeByScore('myset4', '-inf', '+inf', 'withscores');
+        $this->assertEquals(['key1', 6, 'key2', 60, 'key_not_in_myset2', 200, 'key_not_in_myset1', 800], $range);
     }
 }
